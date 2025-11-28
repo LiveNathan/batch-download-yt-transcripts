@@ -23,13 +23,31 @@ import java.util.stream.Collectors;
 
 void main(String... args) {
     if (args.length == 0) {
-        System.out.println("Usage: BatchDownloadYtTranscripts <channel-url>");
+        System.out.println("Usage: BatchDownloadYtTranscripts <channel-url> [--limit N]");
         System.out.println("Example: BatchDownloadYtTranscripts https://www.youtube.com/@JitteredTV");
+        System.out.println("Example: BatchDownloadYtTranscripts https://www.youtube.com/@JitteredTV --limit 1");
         System.exit(1);
     }
 
     String channelUrl = args[0];
+    Integer limit = null;
+
+    // Parse optional --limit argument
+    for (int i = 1; i < args.length; i++) {
+        if (args[i].equals("--limit") && i + 1 < args.length) {
+            try {
+                limit = Integer.parseInt(args[i + 1]);
+            } catch (NumberFormatException e) {
+                System.err.println("❌ Invalid limit value: " + args[i + 1]);
+                System.exit(1);
+            }
+        }
+    }
+
     System.out.println("📺 Processing channel: " + channelUrl);
+    if (limit != null) {
+        System.out.println("⚠️  Limit: Processing only " + limit + " video(s)");
+    }
 
     try {
         // Get channel info and video URLs
@@ -37,13 +55,20 @@ void main(String... args) {
         System.out.println("📁 Channel: " + channelInfo.channelName());
         System.out.println("🎬 Found " + channelInfo.videoUrls().size() + " videos");
 
+        // Apply limit if specified
+        List<String> videosToProcess = channelInfo.videoUrls();
+        if (limit != null && limit < videosToProcess.size()) {
+            videosToProcess = videosToProcess.subList(0, limit);
+            System.out.println("🎯 Processing first " + limit + " video(s)");
+        }
+
         // Create output directory
         Path outputDir = Paths.get(sanitizeFileName(channelInfo.channelName()));
         Files.createDirectories(outputDir);
         System.out.println("📂 Output directory: " + outputDir.toAbsolutePath());
 
         // Download transcripts concurrently
-        downloadTranscripts(channelInfo.videoUrls(), outputDir);
+        downloadTranscripts(videosToProcess, outputDir);
 
         System.out.println("✅ All transcripts downloaded successfully!");
 

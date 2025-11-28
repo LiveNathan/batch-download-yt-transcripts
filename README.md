@@ -37,6 +37,18 @@ Or using JBang explicitly:
 jbang BatchDownloadYtTranscripts.java "https://www.youtube.com/@JitteredTV"
 ```
 
+### Test with a single video (recommended for first run)
+
+```bash
+./BatchDownloadYtTranscripts.java "https://www.youtube.com/@JitteredTV" --limit 1
+```
+
+### Process a specific number of videos
+
+```bash
+./BatchDownloadYtTranscripts.java "https://www.youtube.com/@JitteredTV" --limit 5
+```
+
 The script will:
 1. Fetch all video URLs from the specified channel
 2. Download VTT subtitles for each video
