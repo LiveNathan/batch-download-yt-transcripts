@@ -53,13 +53,13 @@ void main(String... args) {
         // Get channel info and video URLs
         ChannelInfo channelInfo = getChannelInfo(channelUrl);
         System.out.println("📁 Channel: " + channelInfo.channelName());
-        System.out.println("🎬 Found " + channelInfo.videoUrls().size() + " videos");
+        System.out.println("🎬 Found " + channelInfo.videos().size() + " videos");
 
-        // Apply limit if specified
-        List<String> videosToProcess = channelInfo.videoUrls();
+        // Apply limit if specified (videos are already sorted by date descending)
+        List<VideoInfo> videosToProcess = channelInfo.videos();
         if (limit != null && limit < videosToProcess.size()) {
             videosToProcess = videosToProcess.subList(0, limit);
-            System.out.println("🎯 Processing first " + limit + " video(s)");
+            System.out.println("🎯 Processing " + limit + " most recent video(s)");
         }
 
         // Create output directory
@@ -68,7 +68,8 @@ void main(String... args) {
         System.out.println("📂 Output directory: " + outputDir.toAbsolutePath());
 
         // Download transcripts concurrently
-        downloadTranscripts(videosToProcess, outputDir);
+        List<String> videoUrls = videosToProcess.stream().map(VideoInfo::url).toList();
+        downloadTranscripts(videoUrls, outputDir);
 
         System.out.println("✅ All transcripts downloaded successfully!");
 
@@ -79,9 +80,9 @@ void main(String... args) {
     }
 }
 
-record ChannelInfo(String channelName, List<String> videoUrls) {}
+record ChannelInfo(String channelName, List<VideoInfo> videos) {}
 
-record VideoInfo(String url, String title) {}
+record VideoInfo(String url, String title, String uploadDate) {}
 
 /**
  * Gets channel information including name and all video URLs
@@ -100,7 +101,7 @@ ChannelInfo getChannelInfo(String channelUrl) throws IOException, InterruptedExc
 
     Process process = pb.start();
 
-    List<String> videoUrls = new ArrayList<>();
+    List<VideoInfo> videos = new ArrayList<>();
     String channelName = null;
 
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -113,10 +114,14 @@ ChannelInfo getChannelInfo(String channelUrl) throws IOException, InterruptedExc
                 channelName = json.get("channel").getAsString();
             }
 
-            // Get video URL
+            // Get video info
             if (json.has("id")) {
                 String videoId = json.get("id").getAsString();
-                videoUrls.add("https://www.youtube.com/watch?v=" + videoId);
+                String url = "https://www.youtube.com/watch?v=" + videoId;
+                String title = json.has("title") ? json.get("title").getAsString() : videoId;
+                String uploadDate = json.has("upload_date") ? json.get("upload_date").getAsString() : "00000000";
+
+                videos.add(new VideoInfo(url, title, uploadDate));
             }
         }
     }
@@ -131,7 +136,10 @@ ChannelInfo getChannelInfo(String channelUrl) throws IOException, InterruptedExc
         channelName = "youtube_channel_" + System.currentTimeMillis();
     }
 
-    return new ChannelInfo(channelName, videoUrls);
+    // Sort videos by upload date descending (newest first)
+    videos.sort((v1, v2) -> v2.uploadDate().compareTo(v1.uploadDate()));
+
+    return new ChannelInfo(channelName, videos);
 }
 
 /**

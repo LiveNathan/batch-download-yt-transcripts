@@ -43,11 +43,17 @@ jbang BatchDownloadYtTranscripts.java "https://www.youtube.com/@JitteredTV"
 ./BatchDownloadYtTranscripts.java "https://www.youtube.com/@JitteredTV" --limit 1
 ```
 
+This will download the **most recent video** from the channel.
+
 ### Process a specific number of videos
 
 ```bash
 ./BatchDownloadYtTranscripts.java "https://www.youtube.com/@JitteredTV" --limit 5
 ```
+
+This will download the **5 most recent videos** from the channel.
+
+**Note:** Videos are automatically sorted by upload date (newest first), so using `--limit` always gives you the most recent videos.
 
 The script will:
 1. Fetch all video URLs from the specified channel
