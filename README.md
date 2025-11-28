@@ -28,19 +28,19 @@ brew install yt-dlp
 ### Download all transcripts from a channel
 
 ```bash
-./BatchDownloadYtTranscripts.java "https://www.youtube.com/@JitteredTV"
+./BatchDownloadYtTranscripts.java "https://www.youtube.com/@ChannelName"
 ```
 
 Or using JBang explicitly:
 
 ```bash
-jbang BatchDownloadYtTranscripts.java "https://www.youtube.com/@JitteredTV"
+jbang BatchDownloadYtTranscripts.java "https://www.youtube.com/@ChannelName"
 ```
 
 ### Test with a single video (recommended for first run)
 
 ```bash
-./BatchDownloadYtTranscripts.java "https://www.youtube.com/@JitteredTV" --limit 1
+./BatchDownloadYtTranscripts.java "https://www.youtube.com/@ChannelName" --limit 1
 ```
 
 This will download the **most recent video** from the channel.
@@ -48,7 +48,7 @@ This will download the **most recent video** from the channel.
 ### Process a specific number of videos
 
 ```bash
-./BatchDownloadYtTranscripts.java "https://www.youtube.com/@JitteredTV" --limit 5
+./BatchDownloadYtTranscripts.java "https://www.youtube.com/@ChannelName" --limit 5
 ```
 
 This will download the **5 most recent videos** from the channel.
@@ -65,7 +65,7 @@ The script will:
 ### Output Structure
 
 ```
-JitteredTV/
+ChannelName/
 ├── Video_Title_1.md
 ├── Video_Title_2.md
 └── Video_Title_3.md
@@ -75,20 +75,6 @@ Each Markdown file contains:
 - Video title as header
 - Link to original video
 - Clean transcript text with paragraph breaks
-
-### Example Output
-
-```markdown
-# JitterTed's TDD Game Online - #11 "WebSockets, CSS, Card Deck"
-
-**Video URL:** https://youtu.be/rNXYVANwhko
-
----
-
-## Transcript
-
-all right hello folks welcome to Tuesday earlier astd first hey there...
-```
 
 ## Features
 
