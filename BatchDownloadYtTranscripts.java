@@ -1,5 +1,5 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
-//JAVA 21+
+//JAVA 25+
 //DEPS com.google.code.gson:gson:2.11.0
 
 import com.google.gson.JsonArray;
