@@ -6,7 +6,7 @@ A JBang script that downloads all video transcripts from a YouTube channel and c
 
 1. **JBang**: Install from [jbang.dev](https://www.jbang.dev/)
 2. **yt-dlp**: Install using `pip install yt-dlp` or from [yt-dlp GitHub](https://github.com/yt-dlp/yt-dlp)
-3. **Java 21+**: The script requires Java 21 or later
+3. **Java 25+**: The script requires Java 25 or later
 
 ## Installation
 
@@ -60,7 +60,7 @@ The script will:
 2. Download VTT subtitles for each video
 3. Convert VTT files to clean Markdown format
 4. Save files in a directory named after the channel
-5. Download transcripts concurrently (up to 4 at a time)
+5. Download transcripts concurrently using virtual threads
 
 ### Output Structure
 
@@ -92,13 +92,13 @@ all right hello folks welcome to Tuesday earlier astd first hey there...
 
 ## Features
 
-- **Concurrent Downloads**: Downloads up to 4 transcripts simultaneously for faster processing
+- **Virtual Thread Concurrency**: Uses Java virtual threads for efficient concurrent downloads
 - **Auto-Generated Channel Directories**: Organizes files by channel name
 - **Clean Markdown Formatting**:
   - Removes VTT timing information
   - Filters duplicate text
   - Removes noise markers like [Music] and [Applause]
-  - Creates readable paragraph breaks (~500 chars)
+  - Continuous transcript optimized for LLM consumption
 - **Filename Sanitization**: Handles special characters in video titles
 - **Progress Tracking**: Shows download progress for each video
 - **Error Handling**: Continues processing even if some videos don't have transcripts
@@ -117,6 +117,7 @@ all right hello folks welcome to Tuesday earlier astd first hey there...
 
 ## Use Cases
 
+- **LLM Training & Analysis**: Continuous transcript format optimized for LLM consumption
 - Research and analysis of content creators' work
 - Creating searchable archives of educational content
 - Analyzing speaking patterns and technical terminology
@@ -128,7 +129,7 @@ all right hello folks welcome to Tuesday earlier astd first hey there...
 - Only works with videos that have auto-generated or manual subtitles
 - Transcript quality depends on YouTube's speech recognition
 - Some videos may not have transcripts available
-- Rate limiting: Downloads are throttled to 4 concurrent connections
+- Requires Java 25+ for virtual thread support
 
 ## Testing
 
@@ -142,11 +143,11 @@ This will convert the example VTT file and output to `test_output.md`.
 
 ## Technical Details
 
-- **Language**: Java 21+ (using preview features for implicit main methods)
+- **Language**: Java 25+ (using modern features like implicit main methods and virtual threads)
 - **Build Tool**: JBang (zero-setup Java scripting)
-- **Dependencies**: Gson (for JSON parsing of yt-dlp output)
+- **Dependencies**: Gson 2.13.2 (for JSON parsing of yt-dlp output)
 - **External Tools**: yt-dlp (for YouTube metadata and subtitle download)
-- **Concurrency**: ExecutorService with configurable thread pool
+- **Concurrency**: Virtual threads via `Executors.newVirtualThreadPerTaskExecutor()`
 
 ## Why Not JobRunr?
 
