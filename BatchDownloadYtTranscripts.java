@@ -1,6 +1,6 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
-//JAVA 21+
-//DEPS com.google.code.gson:gson:2.11.0
+//JAVA 25+
+//DEPS com.google.code.gson:gson:2.13.2
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -147,13 +147,13 @@ ChannelInfo getChannelInfo(String channelUrl) throws IOException, InterruptedExc
 }
 
 /**
- * Downloads transcripts for all videos concurrently
+ * Downloads transcripts for all videos concurrently using virtual threads
  */
 void downloadTranscripts(List<String> videoUrls, Path outputDir) throws InterruptedException {
-    int threadCount = Math.min(4, Runtime.getRuntime().availableProcessors()); // Limit to 4 concurrent downloads
-    ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+    // Use virtual threads for efficient I/O-bound concurrent operations
+    ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
-    System.out.println("⚡ Downloading transcripts with " + threadCount + " threads...");
+    System.out.println("⚡ Downloading transcripts with virtual threads...");
 
     for (int i = 0; i < videoUrls.size(); i++) {
         String videoUrl = videoUrls.get(i);
@@ -255,7 +255,7 @@ String convertVttToMarkdown(Path vttFile, String videoUrl) throws IOException {
     Pattern timestampPattern = Pattern.compile("^\\d{2}:\\d{2}:\\d{2}\\.\\d{3} --> \\d{2}:\\d{2}:\\d{2}\\.\\d{3}");
     Pattern wordTimingPattern = Pattern.compile("<\\d{2}:\\d{2}:\\d{2}\\.\\d{3}><c>");
 
-    StringBuilder currentParagraph = new StringBuilder();
+    StringBuilder transcript = new StringBuilder();
     String previousLine = "";
 
     for (int i = 0; i < lines.size(); i++) {
@@ -286,25 +286,19 @@ String convertVttToMarkdown(Path vttFile, String videoUrl) throws IOException {
             continue;
         }
 
-        // Add text to paragraph
+        // Add text to continuous transcript (optimized for LLM consumption)
         if (!line.isEmpty()) {
-            if (currentParagraph.length() > 0) {
-                currentParagraph.append(" ");
+            if (transcript.length() > 0) {
+                transcript.append(" ");
             }
-            currentParagraph.append(line);
+            transcript.append(line);
             previousLine = line;
-
-            // Create paragraph breaks every ~500 characters for readability
-            if (currentParagraph.length() > 500) {
-                markdown.append(currentParagraph.toString().trim()).append("\n\n");
-                currentParagraph = new StringBuilder();
-            }
         }
     }
 
-    // Add any remaining text
-    if (currentParagraph.length() > 0) {
-        markdown.append(currentParagraph.toString().trim()).append("\n");
+    // Add the complete transcript as one continuous block
+    if (transcript.length() > 0) {
+        markdown.append(transcript.toString().trim()).append("\n");
     }
 
     return markdown.toString();
