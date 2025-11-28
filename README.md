@@ -14,12 +14,7 @@ A JBang script that downloads all video transcripts from a YouTube channel and c
 # Install JBang (macOS)
 brew install jbang
 
-# Install JBang (Linux)
-curl -Ls https://sh.jbang.dev | bash -s - app setup
-
 # Install yt-dlp
-pip install yt-dlp
-# or
 brew install yt-dlp
 ```
 
@@ -107,7 +102,6 @@ Each Markdown file contains:
 - Research and analysis of content creators' work
 - Creating searchable archives of educational content
 - Analyzing speaking patterns and technical terminology
-- Blog post research (like analyzing Ted M. Young's development workflow)
 - Accessibility and content indexing
 
 ## Limitations
@@ -135,35 +129,12 @@ This will convert the example VTT file and output to `test_output.md`.
 - **External Tools**: yt-dlp (for YouTube metadata and subtitle download)
 - **Concurrency**: Virtual threads via `Executors.newVirtualThreadPerTaskExecutor()`
 
-## Why Not JobRunr?
-
-JobRunr is a distributed job scheduling library designed for:
-- Background job processing with persistence
-- Distributed task execution across multiple servers
-- Job monitoring and retry mechanisms
-- Complex scheduling patterns
-
-For this use case, JobRunr would be overkill because:
-- Simple batch processing task
-- No need for persistence or retry logic
-- No distributed execution requirements
-- Java's built-in `ExecutorService` provides sufficient concurrent execution
-
 ## Troubleshooting
 
 **No transcripts found**:
 - Some videos don't have auto-generated subtitles
 - Private or restricted videos can't be accessed
 - Try with a different channel
-
-**Permission denied when running script**:
-```bash
-chmod +x BatchDownloadYtTranscripts.java
-```
-
-**yt-dlp errors**:
-- Update yt-dlp: `pip install --upgrade yt-dlp`
-- Check video accessibility in browser
 
 **Unicode/encoding issues**:
 - The script handles special characters in filenames
