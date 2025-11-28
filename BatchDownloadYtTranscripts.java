@@ -110,16 +110,20 @@ ChannelInfo getChannelInfo(String channelUrl) throws IOException, InterruptedExc
             JsonObject json = JsonParser.parseString(line).getAsJsonObject();
 
             // Get channel name from first entry
-            if (channelName == null && json.has("channel")) {
+            if (channelName == null && json.has("channel") && !json.get("channel").isJsonNull()) {
                 channelName = json.get("channel").getAsString();
             }
 
             // Get video info
-            if (json.has("id")) {
+            if (json.has("id") && !json.get("id").isJsonNull()) {
                 String videoId = json.get("id").getAsString();
                 String url = "https://www.youtube.com/watch?v=" + videoId;
-                String title = json.has("title") ? json.get("title").getAsString() : videoId;
-                String uploadDate = json.has("upload_date") ? json.get("upload_date").getAsString() : "00000000";
+                String title = (json.has("title") && !json.get("title").isJsonNull())
+                    ? json.get("title").getAsString()
+                    : videoId;
+                String uploadDate = (json.has("upload_date") && !json.get("upload_date").isJsonNull())
+                    ? json.get("upload_date").getAsString()
+                    : "00000000";
 
                 videos.add(new VideoInfo(url, title, uploadDate));
             }
