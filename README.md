@@ -5,7 +5,7 @@ A JBang script that downloads all video transcripts from a YouTube channel and c
 ## Prerequisites
 
 1. **JBang**: Install from [jbang.dev](https://www.jbang.dev/)
-2. **yt-dlp**: Install using `pip install yt-dlp` or from [yt-dlp GitHub](https://github.com/yt-dlp/yt-dlp)
+2. **yt-dlp**: Install from [yt-dlp GitHub](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#installation)
 3. **Java 25+**: The script requires Java 25 or later
 
 ## Installation
